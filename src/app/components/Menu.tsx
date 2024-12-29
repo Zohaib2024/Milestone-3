@@ -9,10 +9,10 @@ type MenuProps = {
 
 const Menu: React.FC<MenuProps> = ({ showCatMenu, setShowCatMenu }) => {
   const data = [
-    { id: 1, name: "Home", url: "/" },
-    { id: 2, name: "About", url: "/about" },
+    { id: 1, name: "Home", link: "/" },
+    { id: 2, name: "About", link: "/about" },
     { id: 3, name: "Categories", subMenu: true },
-    { id: 4, name: "Contact", url: "/contact" },
+    { id: 4, name: "Contact", link: "/contact" },
   ];
 
   const subMenuData = [
@@ -55,7 +55,7 @@ const Menu: React.FC<MenuProps> = ({ showCatMenu, setShowCatMenu }) => {
             </li>
           ) : (
             <li className="cursor-pointer">
-              <Link href={item.url}>{item.name}</Link>
+              <Link href="/">{item.name}</Link>
             </li>
           )}
         </React.Fragment>
