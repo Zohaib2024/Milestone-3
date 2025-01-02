@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Wrapper from "./Wrapper";
 import Image from "next/image";
@@ -11,40 +10,46 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import { BsCart } from "react-icons/bs";
 import { BiMenuAltRight } from "react-icons/bi";
 import { VscChromeClose } from "react-icons/vsc";
-import { SiElastic } from "react-icons/si";
+
+interface MenuProps {
+  showCatMenu: boolean;
+  setShowCatMenu: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface MenuMobileProps extends MenuProps {
+  setMobileMenu: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const Header: React.FC = () => {
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [showCatMenu, setShowCatMenu] = useState(false);
-  const [show, setShow] = useState("translate-y-0");
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [mobileMenu, setMobileMenu] = useState<boolean>(false);
+  const [showCatMenu, setShowCatMenu] = useState<boolean>(false);
+  const [show, setShow] = useState<string>("translate-y-0");
+  const [lastScrollY, setLastScrollY] = useState<number>(0);
 
   const controlNavbar = () => {
     if (window.scrollY > 200) {
       if (window.scrollY > lastScrollY && !mobileMenu) {
-        // Hides the navbar when scrolling down
         setShow("-translate-y-[80px]");
       } else {
-        // Adds shadow when scrolling up
         setShow("shadow-sm");
       }
     } else {
-      // Resets the navbar position when scrolled near the top
       setShow("translate-y-0");
     }
-    // Updates the last scroll position
     setLastScrollY(window.scrollY);
   };
 
   useEffect(() => {
-    // Add scroll event listener
     window.addEventListener("scroll", controlNavbar);
-
-    // Cleanup function to remove the event listener
     return () => {
       window.removeEventListener("scroll", controlNavbar);
     };
-  }, [lastScrollY, mobileMenu]); // Dependency array includes variables used inside the effect
+  }, [lastScrollY, mobileMenu]);
+
+  const cartCount =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("cart") || "[]")?.length || 0
+      : 0;
 
   return (
     <header
@@ -72,19 +77,25 @@ const Header: React.FC = () => {
         )}
 
         <div className="flex items-center gap-2 text-black">
-          <div className="w-8 md:w-12 h-8 md:h-12 flex rounded-full justify-center items-center cursor-pointer relative hover:bg-black/[0.05]">
+          {/* Wishlist Icon */}
+          {/* <div className="w-8 md:w-12 h-8 md:h-12 flex rounded-full justify-center items-center cursor-pointer relative hover:bg-black/[0.05]">
             <IoMdHeartEmpty className="text-[19px] md:text-[24px]" />
             <div className="h-[14px] md:h-[18px] min-w-[14px] md:min-w-[18px] rounded-full bg-red-600 absolute top-1 left-5 md:left-7 text-white text-[10px] md:text-[12px] flex justify-center items-center px-[2px] md:px-[5px] ">
               5
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-8  md:w-12 h-8 md:h-12 flex rounded-full justify-center items-center cursor-pointer relative hover:bg-black/[0.05]">
-            <BsCart className="text-[19px] md:text-[24px]" />
+          {/* Cart Icon */}
+          <div className="w-8 md:w-12 h-8 md:h-12 flex rounded-full justify-center items-center cursor-pointer relative hover:bg-black/[0.05]">
+            <Link href="/Cart">
+              <BsCart className="text-[19px] md:text-[24px]" />
+            </Link>
             <div className="h-[14px] md:h-[18px] min-w-[14px]  md:min-w-[18px] rounded-full bg-red-600 absolute top-1  left-5 md:left-7 text-white text-[10px] md:text-[12px] flex justify-center items-center px-[2px] md:px-[5px] ">
-              5
+              {cartCount}
             </div>
           </div>
+
+          {/* Mobile Menu Toggle */}
           <div className="w-8 md:w-12 h-8 md:h-12 flex rounded-full justify-center items-center cursor-pointer relative hover:bg-black/[0.05] md:hidden">
             {mobileMenu ? (
               <VscChromeClose

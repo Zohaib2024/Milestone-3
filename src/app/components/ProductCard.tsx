@@ -1,30 +1,43 @@
-import Image from "next/image";
+"use client";
 import Link from "next/link";
-import React from "react";
 
-const ProductCard = ({ product }) => {
-  const { id, name, price, originalPrice, discount, image } = product;
+// Define a TypeScript interface for the product prop
+interface Product {
+  id: number;
+  image: string;
+  title: string;
+  category: string;
+  price: number;
+  // Optionally, you can add these properties if you plan to use them
+  // description: string;
+  // rating: {
+  //   rate: number;
+  //   count: number;
+  // };
+}
 
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link
-      href={`/product/${id}`}
-      className="transform overflow-hidden bg-white duration-200 hover:scale-105 cursor-pointer"
-    >
-      <Image width={500} height={500} src={image} alt={name} />
-      <div className="p-4 text-black/[0.9]">
-        <h2 className="text-lg font-medium">{name}</h2>
-        <div className="flex items-center text-black/[0.5]">
-          <p className="mr-2 text-lg font-semibold">{price} PKR</p>
-          <p className="text-base font-medium line-through">
-            {originalPrice} PKR
-          </p>
-          <p className="ml-auto text-base font-medium text-green-500">
-            {discount}% off
-          </p>
-        </div>
+    <Link href={`/product/${product.id}`}>
+      <div className="border p-4 rounded-lg shadow-md">
+        <img
+          src={product.image}
+          alt={product.title}
+          className="w-full h-64 object-contain mb-4"
+        />
+        <h2 className="font-semibold text-lg">{product.title}</h2>
+        <p className="text-gray-600 text-sm mb-2">{product.category}</p>
+        {/* <p className="text-gray-700 text-sm mb-2">{product.description}</p> */}
+        <p className="text-green-600 font-bold mb-2">${product.price}</p>
+        {/* <div className="flex items-center text-sm text-gray-500">
+          <span className="mr-2">Rating: {product.rating.rate}</span>
+          <span>({product.rating.count} reviews)</span>
+        </div> */}
       </div>
     </Link>
   );
-};
-
-export default ProductCard;
+}
