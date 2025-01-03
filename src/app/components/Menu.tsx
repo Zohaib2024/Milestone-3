@@ -49,7 +49,7 @@ const Menu: React.FC<MenuProps> = ({ showCatMenu, setShowCatMenu }) => {
         <Link href="/">Home</Link>
       </li>
       <li className="cursor-pointer">
-        <Link href="/about">About</Link>
+        <Link href="../pages/about">About</Link>
       </li>
       <li
         className="cursor-pointer flex items-center gap-2 relative"
@@ -74,7 +74,7 @@ const Menu: React.FC<MenuProps> = ({ showCatMenu, setShowCatMenu }) => {
         )}
       </li>
       <li className="cursor-pointer">
-        <Link href="/contact">Contact</Link>
+        <Link href="../pages/contact">Contact</Link>
       </li>
     </ul>
   );

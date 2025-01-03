@@ -63,9 +63,9 @@ const MenuMobile: React.FC<MenuProps> = ({
 
   const data: MenuItem[] = [
     { id: 1, name: "Home", url: "/" },
-    { id: 2, name: "About", url: "/about" },
+    { id: 2, name: "About", url: "../pages/about" },
     { id: 3, name: "Categories", subMenu: true },
-    { id: 4, name: "Contact", url: "/contact" },
+    { id: 4, name: "Contact", url: "../pages/contact" },
   ];
 
   return (
@@ -87,7 +87,7 @@ const MenuMobile: React.FC<MenuProps> = ({
                   {categories.map((category) => (
                     <Link
                       key={category.id}
-                      href={category.url} // Use category.url here
+                      href={`/Category/${category.name}`} // Use category.url here
                       onClick={() => {
                         setShowCatMenu(false);
                         setMobileMenu(false);

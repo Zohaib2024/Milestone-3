@@ -1,6 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import CircularLoader from "./CircularLoader";
+import React, { useState } from "react";
 import Link from "next/link";
 
 interface Slide {
@@ -9,46 +7,12 @@ interface Slide {
   caption: string;
 }
 
-const HeroBanner: React.FC = () => {
-  const [slides, setSlides] = useState<Slide[]>([]);
+interface HeroBannerProps {
+  slides: Slide[];
+}
+
+const HeroBanner: React.FC<HeroBannerProps> = ({ slides }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("https://fakestoreapi.com/products");
-        const data = await response.json();
-
-        const highCountProducts = data
-          .filter((product: any) => product.rating.count > 100)
-          .slice(0, 3);
-
-        const formattedSlides: Slide[] = highCountProducts.map(
-          (product: any) => ({
-            id: product.id,
-            src: product.image,
-            caption: product.title,
-          })
-        );
-
-        setSlides(formattedSlides);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    if (slides.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [slides]);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
@@ -61,11 +25,7 @@ const HeroBanner: React.FC = () => {
   };
 
   if (slides.length === 0) {
-    return (
-      <div>
-        <CircularLoader />
-      </div>
-    );
+    return <div>Loading...</div>; // You can replace this with your CircularLoader component
   }
 
   return (
