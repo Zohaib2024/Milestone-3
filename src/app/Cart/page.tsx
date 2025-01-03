@@ -1,35 +1,35 @@
-"use client"; // Ensure client-side rendering
+"use client";
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2"; // Import Swal
+import Swal from "sweetalert2";
 import Wrapper from "../components/Wrapper";
 import CartItems from "../components/Cartitems";
 
-// Define types for product
-interface Product {
+// Define the unified CartItem type
+interface CartItem {
   id: number;
   name: string;
   description: string;
   size: string;
   quantity: number;
-  price: string;
+  price: number;
   image: string;
+  category: string; // Added category
 }
 
-// Define types for local storage cart data
 interface CartItemInLocalStorage {
   id: number;
   quantity: number;
 }
 
 const Page: React.FC = () => {
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const fetchCartProducts = async () => {
       const cartItems: CartItemInLocalStorage[] = JSON.parse(
         localStorage.getItem("cart") || "[]"
       );
-      const fetchedProducts: Product[] = [];
+      const fetchedProducts: CartItem[] = [];
 
       for (const item of cartItems) {
         try {
@@ -42,10 +42,11 @@ const Page: React.FC = () => {
               id: product.id,
               name: product.title,
               description: product.description,
-              size: "Default", // Add appropriate size if available
-              quantity: item.quantity, // Use the quantity from the local storage cart
-              price: `₹ ${product.price.toFixed(2)}`,
+              size: "Default",
+              quantity: item.quantity,
+              price: product.price,
               image: product.image,
+              category: product.category || "General", // Default category
             });
           }
         } catch (error) {
@@ -91,11 +92,7 @@ const Page: React.FC = () => {
 
   const calculateTotal = (): string => {
     return cart
-      .reduce(
-        (total, item) =>
-          total + item.quantity * parseFloat(item.price.replace("₹", "")),
-        0
-      )
+      .reduce((total, item) => total + item.quantity * item.price, 0)
       .toFixed(2);
   };
 
@@ -114,15 +111,15 @@ const Page: React.FC = () => {
         showConfirmButton: false,
         timer: 1500,
       }).then(() => {
-        localStorage.removeItem("cart"); // Clear only the cart data from local storage
-        setCart([]); // Reset the cart state
+        localStorage.removeItem("cart");
+        setCart([]);
       });
     });
   };
 
   return (
     <div className="w-full md:py-20">
-      <Wrapper className="">
+      <Wrapper>
         <div className="text-center max-w-[800px] mx-auto mt-8 md:mt-0">
           <div className="text-[28px] md:text-[34px] mb-5 font-semibold leading-tight">
             Shopping Cart
