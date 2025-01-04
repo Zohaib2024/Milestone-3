@@ -65,7 +65,7 @@ const Header: React.FC = () => {
           />
         </Link>
 
-        <Menu showCatMenu={showCatMenu} setShowCatMenu={setShowCatMenu} />
+        <Menu />
 
         {mobileMenu && (
           <MenuMobile
