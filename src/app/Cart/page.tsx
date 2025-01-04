@@ -75,69 +75,79 @@ export default function CartPage() {
   };
 
   return (
-    <main className="max-w-4xl mx-auto p-6 my-10 bg-white shadow-lg rounded-lg">
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div
-            className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-blue-600"
-            role="status"
-          >
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      ) : cartItems.length === 0 ? (
-        <p className="text-center text-lg text-gray-500">Your cart is empty</p>
-      ) : (
-        <>
-          <div className="space-y-6">
-            {cartItems.map((product: any) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between border-b pb-4"
-              >
-                <div className="flex items-center">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                  <div className="ml-4">
-                    <h1 className="text-xl font-semibold text-gray-800">
-                      {product.title}
-                    </h1>
-                    <p className="text-lg text-gray-600">${product.price}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-500">
-                    Qty: {product.quantity || 1}
-                  </span>
-                </div>
-                <button
-                  onClick={() => handleRemoveFromCart(product.id)}
-                  className="text-red-500 hover:text-red-700 font-semibold"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex justify-between items-center border-t pt-4">
-            <h2 className="text-2xl font-semibold text-gray-800">Total</h2>
-            <p className="text-xl text-gray-800">${total.toFixed(2)}</p>
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={handleCheckout}
-              className="bg-black text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700"
+    <div className="w-screen h-screen">
+      <main className="max-w-4xl mx-auto p-6 my-10 bg-white  rounded-lg">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div
+              className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-blue-600"
+              role="status"
             >
-              Proceed to Checkout
-            </button>
+              <span className="sr-only">Loading...</span>
+            </div>
           </div>
-        </>
-      )}
-    </main>
+        ) : cartItems.length === 0 ? (
+          <p className="text-center text-lg text-gray-500 flex justify-center items-center flex-col">
+            <img
+              src="empty-cart.jpg"
+              alt="empty cart logo"
+              height="500"
+              width={500}
+            />
+            Your cart is empty
+          </p>
+        ) : (
+          <>
+            <div className="space-y-6">
+              {cartItems.map((product: any) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between border-b pb-4"
+                >
+                  <div className="flex items-center">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-16 h-16 object-cover rounded-md"
+                    />
+                    <div className="ml-4">
+                      <h1 className="text-xl font-semibold text-gray-800">
+                        {product.title}
+                      </h1>
+                      <p className="text-lg text-gray-600">${product.price}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-500">
+                      Qty: {product.quantity || 1}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveFromCart(product.id)}
+                    className="text-red-500 hover:text-red-700 font-semibold"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-between items-center border-t pt-4">
+              <h2 className="text-2xl font-semibold text-gray-800">Total</h2>
+              <p className="text-xl text-gray-800">${total.toFixed(2)}</p>
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={handleCheckout}
+                className="bg-black text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700"
+              >
+                Proceed to Checkout
+              </button>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
   );
 }

@@ -193,7 +193,9 @@ const ProductPage = ({ params }: any) => {
   if (!product) {
     return (
       <main>
-        <div className="text-7xl text-center">Loading...</div>
+        <div className="text-7xl text-center w-screen h-screen flex justify-center items-center">
+          <h1>Loading...</h1>
+        </div>
       </main>
     );
   }
