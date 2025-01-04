@@ -64,7 +64,7 @@ const MenuMobile: React.FC<MenuProps> = ({
   const data: MenuItem[] = [
     { id: 1, name: "Home", url: "/" },
     { id: 2, name: "About", url: "../pages/about" },
-    { id: 3, name: "Categories", subMenu: true },
+    { id: 3, name: "Products", url: "/ProductList" },
     { id: 4, name: "Contact", url: "../pages/contact" },
   ];
 

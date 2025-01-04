@@ -1,131 +1,143 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 
-interface CartItem {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
-const Page: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+export default function CartPage() {
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const cart: { id: number }[] = JSON.parse(
-          localStorage.getItem("cart") || "[]"
-        );
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      const cartIds = JSON.parse(storedCart);
 
-        const productRequests = cart.map((item) =>
-          fetch(`https://fakestoreapi.com/products/${item.id}`).then((res) =>
-            res.json()
-          )
-        );
+      const fetchProducts = async () => {
+        setLoading(true); // Start loading when fetching data
+        try {
+          const products = await Promise.all(
+            cartIds.map(async (id: number) => {
+              const res = await fetch(
+                `https://fakestoreapi.com/products/${id}`
+              );
+              return res.json();
+            })
+          );
+          setCartItems(products);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        } finally {
+          setLoading(false); // End loading once the data is fetched
+        }
+      };
 
-        const products: CartItem[] = await Promise.all(productRequests);
-        setCartItems(products);
-      } catch (err) {
-        Swal.fire({
-          title: "Error!",
-          text: "Failed to load cart items.",
-          icon: "error",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCartItems();
+      fetchProducts();
+    }
   }, []);
 
+  // Calculate the total whenever cartItems changes
+  useEffect(() => {
+    const calculateTotal = cartItems.reduce((acc, product) => {
+      return acc + product.price * (product.quantity || 1); // Assuming quantity is available
+    }, 0);
+    setTotal(calculateTotal);
+  }, [cartItems]);
+
   const handleRemoveFromCart = (id: number) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCart);
+    const updatedCartItems = cartItems.filter((item) => item.id !== id);
+    setCartItems(updatedCartItems);
 
-    const updatedLocalStorageCart = (
-      JSON.parse(localStorage.getItem("cart") || "[]") as { id: number }[]
-    ).filter((item) => item.id !== id);
-    localStorage.setItem("cart", JSON.stringify(updatedLocalStorageCart));
-
-    Swal.fire({
-      title: "Removed!",
-      text: "Product removed from cart.",
-      icon: "success",
-    });
+    // Update localStorage with the new cart
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      const cartIds = JSON.parse(storedCart);
+      const updatedCartIds = cartIds.filter((itemId: number) => itemId !== id);
+      localStorage.setItem("cart", JSON.stringify(updatedCartIds));
+    }
   };
 
   const handleCheckout = () => {
+    // Clear localStorage and reset the cartItems state
+    localStorage.removeItem("cart");
+    setCartItems([]);
+
+    // Show a success message using SweetAlert2
     Swal.fire({
-      title: "Thank you!",
-      text: "Thanks for shopping with us!",
+      title: "Thank you for shopping!",
+      text: "Your order has been placed successfully.",
       icon: "success",
       confirmButtonText: "OK",
     }).then(() => {
-      localStorage.removeItem("cart");
-      setCartItems([]);
+      // Redirect to home page or other action after closing the alert
       window.location.href = "/";
     });
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!cartItems.length)
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <img src="/empty-cart.jpg" alt="Empty Cart" className="w-64 h-64" />
-        <p className="mt-4 text-lg text-gray-500">Your cart is empty.</p>
-      </div>
-    );
-
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
-
   return (
-    <div className="w-full min-h-screen bg-gray-50 py-10">
-      <div className="max-w-4xl mx-auto bg-white p-6 shadow rounded-md">
-        <h1 className="text-2xl font-semibold mb-6">Your Cart</h1>
-        {cartItems.map((item) => (
+    <main className="max-w-4xl mx-auto p-6 my-10 bg-white shadow-lg rounded-lg">
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
           <div
-            key={item.id}
-            className="flex items-center justify-between border-b pb-4 mb-4"
+            className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-blue-600"
+            role="status"
           >
-            <div className="flex items-center">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-16 h-16 object-cover rounded-md"
-              />
-              <div className="ml-4">
-                <h2 className="text-lg font-medium">{item.title}</h2>
-                <p className="text-sm text-gray-500">
-                  ${item.price.toFixed(2)}
-                </p>
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      ) : cartItems.length === 0 ? (
+        <p className="text-center text-lg text-gray-500">Your cart is empty</p>
+      ) : (
+        <>
+          <div className="space-y-6">
+            {cartItems.map((product: any) => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between border-b pb-4"
+              >
+                <div className="flex items-center">
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="w-16 h-16 object-cover rounded-md"
+                  />
+                  <div className="ml-4">
+                    <h1 className="text-xl font-semibold text-gray-800">
+                      {product.title}
+                    </h1>
+                    <p className="text-lg text-gray-600">${product.price}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500">
+                    Qty: {product.quantity || 1}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleRemoveFromCart(product.id)}
+                  className="text-red-500 hover:text-red-700 font-semibold"
+                >
+                  Remove
+                </button>
               </div>
-            </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-between items-center border-t pt-4">
+            <h2 className="text-2xl font-semibold text-gray-800">Total</h2>
+            <p className="text-xl text-gray-800">${total.toFixed(2)}</p>
+          </div>
+
+          <div className="mt-6 flex justify-center">
             <button
-              onClick={() => handleRemoveFromCart(item.id)}
-              className="text-red-500 hover:text-red-600"
+              onClick={handleCheckout}
+              className="bg-black text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700"
             >
-              Remove
+              Proceed to Checkout
             </button>
           </div>
-        ))}
-        <div className="flex justify-between items-center mt-6">
-          <h2 className="text-xl font-semibold">
-            Total: ${totalPrice.toFixed(2)}
-          </h2>
-          <button
-            onClick={handleCheckout}
-            className="px-6 py-2 bg-black text-white rounded hover:bg-blue-700"
-          >
-            Checkout
-          </button>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </main>
   );
-};
-
-export default Page;
+}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface Slide {
@@ -12,28 +13,27 @@ interface HeroBannerProps {
 }
 
 const HeroBanner: React.FC<HeroBannerProps> = ({ slides }) => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = slides.length;
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+  // Automatic slide change every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [totalSlides]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
   };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
-    );
-  };
-
-  if (slides.length === 0) {
-    return <div>Loading...</div>; // You can replace this with your CircularLoader component
-  }
 
   return (
     <div className="relative w-full max-w-[1300px] mx-auto text-white">
       <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
           {slides.map((slide) => (
             <div
@@ -55,18 +55,34 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ slides }) => {
         </div>
       </div>
 
+      {/* Navigation buttons */}
       <button
-        onClick={prevSlide}
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 text-3xl text-black p-2 rounded-full hover:bg-gray-700 hover:text-white"
+        onClick={() =>
+          goToSlide((currentSlide - 1 + totalSlides) % totalSlides)
+        }
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white bg-black/50 p-2 rounded-full cursor-pointer"
       >
-        &#10094;
+        &lt;
       </button>
       <button
-        onClick={nextSlide}
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 text-3xl text-black p-2 rounded-full hover:bg-gray-700 hover:text-white"
+        onClick={() => goToSlide((currentSlide + 1) % totalSlides)}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white bg-black/50 p-2 rounded-full cursor-pointer"
       >
-        &#10095;
+        &gt;
       </button>
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {slides.map((_, index) => (
+          <div
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full cursor-pointer ${
+              currentSlide === index ? "bg-white" : "bg-gray-400"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
