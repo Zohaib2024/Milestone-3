@@ -1,14 +1,8 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
 
-type MenuProps = {
-  showProductMenu: boolean;
-  setShowProductMenu: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const Menu: React.FC<MenuProps> = ({ showProductMenu, setShowProductMenu }) => {
+const Menu: React.FC = () => {
   const [productData, setProductData] = useState<
     { id: number; name: string; doc_count: number; url: string }[]
   >([]);
@@ -19,7 +13,7 @@ const Menu: React.FC<MenuProps> = ({ showProductMenu, setShowProductMenu }) => {
         const res = await fetch("https://fakestoreapi.com/products");
         const products = await res.json();
 
-        // Group products by name (or other property) and count
+        // Group products by name and count occurrences
         const productCounts = products.reduce((acc: any, product: any) => {
           acc[product.title] = (acc[product.title] || 0) + 1;
           return acc;
@@ -30,7 +24,7 @@ const Menu: React.FC<MenuProps> = ({ showProductMenu, setShowProductMenu }) => {
             id: index + 1,
             name,
             doc_count: count as number,
-            url: `/ProductList`, // Redirect to the product list page
+            url: `/ProductList`,
           })
         );
 
@@ -49,13 +43,13 @@ const Menu: React.FC<MenuProps> = ({ showProductMenu, setShowProductMenu }) => {
         <Link href="/">Home</Link>
       </li>
       <li className="cursor-pointer">
-        <Link href="../pages/about">About</Link>
+        <Link href="/about">About</Link>
       </li>
-      <li className="cursor-pointer flex items-center gap-2 relative">
+      <li className="cursor-pointer">
         <Link href="/ProductList">Products</Link>
       </li>
       <li className="cursor-pointer">
-        <Link href="../pages/contact">Contact</Link>
+        <Link href="/contact">Contact</Link>
       </li>
     </ul>
   );

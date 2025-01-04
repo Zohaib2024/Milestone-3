@@ -3,19 +3,12 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { BsChevronDown } from "react-icons/bs";
 
-// Define types for categories and menu items
+// Define types for categories
 type Category = {
   id: number;
   name: string;
   doc_count: number;
   url: string;
-};
-
-type MenuItem = {
-  id: number;
-  name: string;
-  url?: string;
-  subMenu?: boolean;
 };
 
 type MenuProps = {
@@ -48,7 +41,7 @@ const MenuMobile: React.FC<MenuProps> = ({
             id: index + 1,
             name,
             doc_count,
-            url: `/categories?category=${name}`, // Passing category as query param
+            url: `/categories?category=${name}`, // Category as a query param
           })
         );
 
@@ -61,18 +54,18 @@ const MenuMobile: React.FC<MenuProps> = ({
     fetchCategories();
   }, []);
 
-  const data: MenuItem[] = [
+  const menuItems = [
     { id: 1, name: "Home", url: "/" },
-    { id: 2, name: "About", url: "../pages/about" },
+    { id: 2, name: "About", url: "/about" },
     { id: 3, name: "Products", url: "/ProductList" },
-    { id: 4, name: "Contact", url: "../pages/contact" },
+    { id: 4, name: "Contact", url: "/contact" },
   ];
 
   return (
     <ul className="flex flex-col md:hidden font-bold absolute top-[50px] left-0 w-full h-[calc(100vh-50px)] bg-white border-t text-black">
-      {data.map((item) => (
+      {menuItems.map((item) => (
         <React.Fragment key={item.id}>
-          {item?.subMenu ? (
+          {item.subMenu ? (
             <li
               className="cursor-pointer py-4 px-5 border-b flex flex-col relative"
               onClick={() => setShowCatMenu(!showCatMenu)}
@@ -81,13 +74,12 @@ const MenuMobile: React.FC<MenuProps> = ({
                 {item.name}
                 <BsChevronDown size={14} />
               </div>
-
               {showCatMenu && (
                 <ul className="bg-black/[0.05] -mx-5 mt-4 -mb-4">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
-                      href={`/Category/${category.name}`} // Use category.url here
+                      href={category.url}
                       onClick={() => {
                         setShowCatMenu(false);
                         setMobileMenu(false);
